@@ -1,17 +1,24 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { connectDB } from "./config/database.js"; // Import connectDB from the config folder
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-   .then(() => console.log("MongoDB Connected"))
-   .catch(err => console.log(err));
+// Connect to MongoDB
+connectDB();
 
-const taskRoutes = require("./routes/taskRoutes");
-app.use("/tasks", taskRoutes);
+const port = process.env.PORT || 5000;
 
-app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
+// Start the server
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+});
+
