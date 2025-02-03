@@ -1,24 +1,66 @@
-import React, {useState} from 'react';
-import './App.css';
+// frontend/src/App.js
+
+import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import TaskForm from './components/TaskForm';
 import EditTaskForm from './components/EditTaskForm';
+import { getTasks, deleteTask } from './api'; // API calls
 
+const App = () => {
+  const [tasks, setTasks] = useState([]);
+  const [editingTask, setEditingTask] = useState(null);
 
-function App() {
-  const [tasks, setTasks] = useState([])
-  const [error, setError] = useState(null);
-  const [editTask, setEditTask] = useState(null)
-  const [editedTaskData, setEditedTaskData] = useState(null)
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const allTasks = await getTasks();
+      setTasks(allTasks);
+    };
+    fetchTasks();
+  }, []);
+
+  const handleAddTask = (newTask) => {
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+  };
+
+  const handleDeleteTask = async (id) => {
+    await deleteTask(id);
+    setTasks(tasks.filter((task) => task._id !== id));
+  };
+
+  const handleEditTask = (task) => {
+    setEditingTask(task);
+  };
+
+  const handleUpdateTask = (updatedTask) => {
+    setTasks(
+      tasks.map((task) =>
+        task._id === updatedTask._id ? updatedTask : task
+      )
+    );
+    setEditingTask(null);
+  };
 
   return (
-    <div className="container">
+    <div>
       <h1>Task Manager</h1>
-        {error && <p style={{ color: "red" }}>Error: {error}</p>}
-       {editTask ? <EditTaskForm  editTask={editTask} setEditTask={setEditTask} editedTaskData={editedTaskData} tasks={tasks} setTasks={setTasks} setError={setError} /> : <TaskForm setTasks={setTasks} tasks={tasks} setError={setError}/> }
-       <TaskList setTasks={setTasks} tasks={tasks} setEditTask={setEditTask} setEditedTaskData={setEditedTaskData}  />
+      {editingTask ? (
+        <EditTaskForm
+          task={editingTask}
+          onCancel={() => setEditingTask(null)}
+          onUpdateTask={handleUpdateTask}
+        />
+      ) : (
+        <>
+          <TaskForm onAddTask={handleAddTask} />
+          <TaskList
+            tasks={tasks}
+            onDeleteTask={handleDeleteTask}
+            onEditTask={handleEditTask}
+          />
+        </>
+      )}
     </div>
   );
-}
+};
 
 export default App;
