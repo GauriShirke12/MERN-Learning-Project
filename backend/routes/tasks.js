@@ -1,7 +1,7 @@
-// routes/tasks.js
-const express = require('express');
+import express from 'express';
+import Task from '../models/task';
+
 const router = express.Router();
-const Task = require('../models/task');
 
 // Get all tasks
 router.get('/', async (req, res) => {
@@ -71,5 +71,4 @@ async function getTask(req, res, next) {
   next();
 }
 
-
-module.exports = router;
+export default router;

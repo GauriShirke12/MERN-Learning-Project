@@ -5,6 +5,7 @@ import TaskList from './components/TaskList';
 import TaskForm from './components/TaskForm';
 import EditTaskForm from './components/EditTaskForm';
 import { getTasks, deleteTask } from './api'; // API calls
+import "./styles.css";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
